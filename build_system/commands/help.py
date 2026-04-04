@@ -1,6 +1,6 @@
 import sys
 from .make import show_help as help_make
-from .help_indent import *
+from .help_indent import help_indent
 
 def entry(argv: list[str]):
 	if len(argv) != 0:
