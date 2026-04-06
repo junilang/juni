@@ -1,0 +1,22 @@
+{
+	"project_name": "juni",
+	"out_dir": "out",
+	"out_binary": "juni",
+	"main_file": "src/main.cc",
+	"compiler": {
+		"binary": "cc",
+		"flags": [
+			"-std=c++23",
+			"-xc++-header",
+			"-fwhole-program",
+			"-fno-exceptions",
+			"-Wall",
+			"-Wextra"
+		],
+		"macros": {
+			"BUILD_DEBUG": "false",
+			"BUILD_RELEASE": "false",
+			"BUILD_TESTING": "false"
+		}
+	}
+}

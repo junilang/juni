@@ -1,6 +1,5 @@
 import sys
-from .args import Args
-from .commands import *
+from . import commands
 
 def main():
 	argv = sys.argv[1:]
@@ -11,6 +10,8 @@ def main():
 				commands.cmd_make(argv[1:])
 			case "help":
 				commands.cmd_help(argv[1:])
+			case "lsp":
+				commands.cmd_lsp(argv[1:])
 			case _:
 				commands.cmd_make(argv)
 	else:
