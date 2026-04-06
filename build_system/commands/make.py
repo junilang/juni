@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-from typing import TextIO
+from typing import TextIO, override
 
 from ..config import Config
 from ..args import Args
@@ -21,23 +21,16 @@ def entry(argv: list[str]):
 
 	config = Config()
 
+	with open("project.json", "r") as file:
+		config.merge(json.load(file))
+
+	makefile_path = config.out_dir + "/make"
+	compiler_command = config.make_command()
+
 	try:
 		os.mkdir(config.out_dir)
 	except Exception:
 		pass
-
-	with open("project.json", "r") as file:
-		config.merge(json.load(file))
-
-	compiler_command = [config.compiler_binary]
-
-	for flag in config.compiler_flags:
-		compiler_command.append(flag)
-
-	compiler_command += ["-o", f"{config.out_dir}/{config.out_binary}"]
-	compiler_command.append(config.main_file)
-
-	makefile_path = config.out_dir + "/make"
 
 	with open(makefile_path, "w") as makefile:
 		def write(s: str):
@@ -46,11 +39,7 @@ def entry(argv: list[str]):
 		write("#!/bin/sh\n\n")
 
 		write(f"echo + {" ".join(compiler_command)}\n\n")
-
-		for arg in compiler_command:
-			write(f"{arg} \\\n")
-
-		write("\n")
+		write(" \\\n".join(compiler_command))
 
 		make_executable(makefile.fileno())
 
