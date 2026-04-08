@@ -1,15 +1,17 @@
 import json
 import os
+from pathlib import Path
 import sys
 from typing import TextIO, override
 
 from ..config import Config
+from ..global_args import GlobalArgs
 from ..args import Args
 from .help_indent import help_indent
-from ..util.chmod import make_executable
+from ..shell_writer import ShellWriter
 
 def entry(argv: list[str]):
-	class MakeArgs(Args):
+	class MakeArgs(GlobalArgs):
 		pass
 
 	args = MakeArgs()
@@ -21,29 +23,24 @@ def entry(argv: list[str]):
 
 	config = Config()
 
-	with open("project.json", "r") as file:
-		config.merge(json.load(file))
+	config.load(profiles=args.profiles)
 
-	makefile_path = config.out_dir + "/make"
-	compiler_command = config.make_command()
+	compiler_command = (
+		[ config.compiler ] +
+		config.make_flags() +
+		[ "-o", f"{config.out_dir}/{config.out_binary}", config.main_file ]
+	)
 
-	try:
-		os.mkdir(config.out_dir)
-	except Exception:
-		pass
+	makefile_path = Path(config.out_dir + "/make")
+	makefile_path.parent.mkdir(parents=True, exist_ok=True)
 
-	with open(makefile_path, "w") as makefile:
-		def write(s: str):
-			makefile.write(s)
+	with makefile_path.open("w") as makefile:
+		w = ShellWriter(makefile)
+		w.write_shebang()
+		w.write_command(compiler_command)
+		w.make_executable()
 
-		write("#!/bin/sh\n\n")
-
-		write(f"echo + {" ".join(compiler_command)}\n\n")
-		write(" \\\n".join(compiler_command))
-
-		make_executable(makefile.fileno())
-
-	print(f"-> {makefile_path} generated")
+		print(f"-> {makefile_path} generated")
 
 
 def show_help(argv: list[str], file: TextIO):

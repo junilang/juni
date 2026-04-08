@@ -1,0 +1,7 @@
+*/**/__pycache__
+out
+.ccls
+.ccls-cache
+.archive
+compile_flags.txt
+project_local.json
