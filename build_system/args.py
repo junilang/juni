@@ -8,8 +8,8 @@ class Args:
 	class StopParseException(Exception):
 		rest: list[str]
 		def __init__(self, rest: list[str]):
+			super().__init__()
 			self.rest = rest
-
 
 	no_flag: bool = False
 

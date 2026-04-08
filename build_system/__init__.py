@@ -8,6 +8,8 @@ def main():
 		match argv[0]:
 			case "make":
 				commands.cmd_make(argv[1:])
+			case "test":
+				commands.cmd_test(argv[1:])
 			case "help":
 				commands.cmd_help(argv[1:])
 			case "lsp":
