@@ -1,7 +1,5 @@
-#if PTRTAG && !defined(OutStream_PTRTAG)
-	#define OutStream_PTRTAG true
-#else
-	#define OutStream_PTRTAG false
+#ifndef OutStream_PTRTAG
+	#define OutStream_PTRTAG PTRTAG
 #endif
 
 typedef struct {
@@ -28,10 +26,9 @@ typedef struct {
 	}
 
 #else
-
 	typedef struct {
-		const IOutStream *iface;
 		Ptr this;
+		const IOutStream *iface;
 	} OutStream;
 
 	Ptr OutStream_this(OutStream this) { return this.this; }

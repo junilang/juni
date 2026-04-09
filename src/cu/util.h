@@ -15,7 +15,4 @@
 
 #define FLAG_NOT(pfx, ...) (~(FLAG(pfx, __VA_ARGS__)))
 
-#define PANIC(fmt, ...)\
-	{ fprintf(stderr, "\nPANIC: " fmt "\n"__VA_OPT__(,) __VA_ARGS__); fflush(stderr); abort(); }
-
 #define STR(s) ((const ubyte*)(s)), (sizeof(s) - 1)
