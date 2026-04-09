@@ -22,8 +22,8 @@ def entry(argv: list[str]):
 		sys.exit(1)
 
 	config = Config()
-
 	config.load(profiles=args.profiles)
+	args.set_config(config)
 
 	compiler_command = (
 		[ config.compiler ] +

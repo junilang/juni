@@ -48,6 +48,7 @@ def entry(argv: list[str]):
 
 	config = Config()
 	config.load(profiles=args.profiles + ["testing"])
+	args.set_config(config)
 
 	test_files: list[str] = []
 
