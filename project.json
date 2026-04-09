@@ -29,7 +29,7 @@
 	],
 
 	"profile_lsp": {
-		"flags": [ "-xc-header" ],
+		"flags": [ "-xc-header", "-ferror-limit=0" ],
 		"macros": {
 			"BUILD_DEBUG": "true",
 			"BUILD_RELEASE": "true",
@@ -45,7 +45,8 @@
 	},
 
 	"profile_asm": {
-		"flags": [ "-masm=intel", "-fverbose-asm" ]
+		"out_binary": "juni.s",
+		"flags": [ "-masm=intel", "-fverbose-asm", "-S" ]
 	},
 
 	"profile_asan": {
