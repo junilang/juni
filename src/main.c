@@ -1,4 +1,14 @@
 #include <stdio.h>
+#include <stdint.h>
+#include <stddef.h>
+#include <stdlib.h>
+
+
+
+#include "cu/__module__.h"
+#include "cu/__module__.c"
+
+
 
 #if BUILD_TESTING
 	#include "test.c"
