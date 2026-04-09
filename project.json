@@ -45,7 +45,8 @@
 	},
 
 	"profile_asm": {
-		"flags": [ "-masm=intel", "-fverbose-asm" ]
+		"out_binary": "juni.s",
+		"flags": [ "-masm=intel", "-fverbose-asm", "-S" ]
 	},
 
 	"profile_asan": {
