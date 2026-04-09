@@ -28,11 +28,11 @@
 #else
 	#define IAllocator_GENERATE_UPCAST(N) \
 		Allocator N##_upcast(Ptr this) { \
-			return (Allocator){.this=this,.iface=&IOutStream_##N}; \
+			return (Allocator){.this=this,.iface=&IAllocator_##N}; \
 		}
 
-	#define IAllocator_REGISTER(N) INTERFACE_REGISTER(IAllocator, N)
-	#define IAllocator_REGISTER_KNOWN(N) INTERFACE_REGISTER_KNOWN(IAllocator, N)
+	#define IAllocator_REGISTER(N)
+	#define IAllocator_REGISTER_KNOWN(N)
 
 #endif
 

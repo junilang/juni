@@ -4,6 +4,9 @@
 
 #include "ptrtag.h"
 #include "interface.h"
+#include "String.h"
+
+#include "hash.h"
 
 #include "OutStream.h"
 #include "Printable.h"

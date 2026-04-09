@@ -5,3 +5,5 @@ out
 .archive
 compile_flags.txt
 project_local.json
+tests/scratch
+tests/scratch.c
