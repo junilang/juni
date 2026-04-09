@@ -21,6 +21,9 @@ class Config:
 		for k, v in macros.items():
 			self.macros[k] = v
 
+	def merge_flags(self, flags: list[str]):
+		self.flags += flags
+
 	def merge(self, data: Any):
 		if not isinstance(data, dict):
 			raise RuntimeError("data is not dict")
