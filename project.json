@@ -29,7 +29,7 @@
 	],
 
 	"profile_lsp": {
-		"flags": [ "-xc-header" ],
+		"flags": [ "-xc-header", "-ferror-limit=0" ],
 		"macros": {
 			"BUILD_DEBUG": "true",
 			"BUILD_RELEASE": "true",
