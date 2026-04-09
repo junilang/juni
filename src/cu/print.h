@@ -48,6 +48,7 @@ void PRINT_Printable(OutStream os, Printable prnt) {
 	long long : PRINT_llong, \
 	unsigned long long : PRINT_ullong, \
 	char* : PRINT_cstring, \
+	const char* : PRINT_cstring, \
 	Printable : PRINT_Printable \
 )(S, (A))
 

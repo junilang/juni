@@ -6,3 +6,10 @@
 	fflush(stderr); \
 	abort(); \
 }
+
+
+#if BUILD_DEBUG
+	#define UNREACHABLE PANIC("unreachable broken")
+#else
+	#define UNREACHABLE unreachable()
+#endif

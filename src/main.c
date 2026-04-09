@@ -4,17 +4,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "cu/__module__.h"
-#include "cu/__module__.c"
+#include "cu/_include.h"
+#include "cu/_include.c"
+
+#include "juni_core/_include.h"
+#include "juni_core/_include.c"
 
 #if BUILD_TESTING
 	#include "test.c"
-#endif
 
-int main(int argc, char **argv) {
-	#if BUILD_TESTING
+	int main(int argc, char **argv) {
 		return testing_entry(argc, argv);
-	#else
-		printf("Hello world!\n");
-	#endif
-}
+	}
+
+#else
+	int main(int argc, char **argv) {
+		FPRINT(stdout, "Hello Juni <3\n");
+		return 0;
+	}
+
+#endif
