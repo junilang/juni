@@ -52,6 +52,7 @@ def entry(argv: list[str]):
 
 	config = Config()
 	config.load(profiles=(args.profiles + ["lsp"]))
+	args.set_config(config)
 
 
 	compiler_flags = config.make_flags() + [

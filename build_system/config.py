@@ -17,6 +17,10 @@ class Config:
 	macros: dict[str, str] = field(default_factory=dict)
 	std_include: str | None = None
 
+	def merge_macros(self, macros: dict[str, str]):
+		for k, v in macros.items():
+			self.macros[k] = v
+
 	def merge(self, data: Any):
 		if not isinstance(data, dict):
 			raise RuntimeError("data is not dict")
@@ -41,8 +45,7 @@ class Config:
 
 		macros = data.get("macros")
 		if isinstance(macros, dict):
-			for k, v in macros.items():
-				self.macros[k] = v
+			self.merge_macros(macros)
 
 	def load(
 		self,
