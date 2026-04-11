@@ -10,7 +10,7 @@ typedef struct {
 
 void testing_run(
 	testing_Context *ctx,
-	const char *name,
+	Str name,
 	int (*entry)(testing_TestContext*)
 ) {
 
@@ -26,7 +26,7 @@ void testing_run(
 }
 
 #define TEST_SUITE_BEGIN void testing_runtests(testing_Context *ctx) {
-#define TEST_RUN(test) testing_run(ctx, #test, &test##_entry);
+#define TEST_RUN(test, name) testing_run(ctx, name, &test##_entry);
 #define TEST_SUITE_END }
 
 #ifdef BUILD_TESTING_INCLUDE

@@ -128,8 +128,9 @@ def entry(argv: list[str]):
 
 		w.write_block(f"echo TEST_SUITE_BEGIN >> \"{gen_file}\"")
 
-		for test_id in test_ids:
-			w.write_block(f"echo \"TEST_RUN({config.tests_sub}{test_id})\" >> \"{gen_file}\"")
+		for test_file, test_id in zip(test_files, test_ids):
+			test_name = test_file.removesuffix(config.tests_suffix)
+			w.write_block(f"echo \"TEST_RUN({config.tests_sub}{test_id}, \\\"{test_name}\\\")\" >> \"{gen_file}\"")
 
 		w.write_block(f"echo TEST_SUITE_END >> \"{gen_file}\"")
 

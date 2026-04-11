@@ -2,6 +2,10 @@
 	#define Allocator_PTRTAG PTRTAG
 #endif
 
+#ifndef Allocator_SAFE
+	#define Allocator_SAFE BUILD_SAFE
+#endif
+
 typedef struct {
 	Ptr (*new)(Ptr this, usize size);
 	Ptr (*resize)(Ptr this, Ptr buf, usize size);
@@ -25,6 +29,10 @@ typedef struct {
 		return &IAllocator__registry[ptrread(this.value)];
 	}
 
+	bool Allocator_equal(Allocator this, Allocator other) {
+		return this.value == other.value;
+	}
+
 #else
 	typedef struct {
 		Ptr this;
@@ -33,6 +41,10 @@ typedef struct {
 
 	Ptr Allocator_this(Allocator this) { return this.this; }
 	const IAllocator *Allocator_iface(Allocator this) { return this.iface; }
+
+	bool Allocator_equal(Allocator this, Allocator other) {
+		return this.this == other.this && this.iface == other.iface;
+	}
 
 #endif
 

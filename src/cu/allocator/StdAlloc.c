@@ -1,9 +1,21 @@
 Ptr StdAlloc_new(Ptr this, usize size) {
-	return malloc(size);
+	Ptr mem = malloc(size);
+
+	#if Allocator_SAFE
+		if (!mem) PANIC("StdAlloc_new: malloc failed");
+	#endif
+
+	return mem;
 }
 
 Ptr StdAlloc_resize(Ptr this, Ptr buf, usize size) {
-	return realloc(buf, size);
+	Ptr mem = realloc(buf, size);
+
+	#if Allocator_SAFE
+		if (!mem) PANIC("StdAlloc_new: malloc failed");
+	#endif
+
+	return mem;
 }
 
 void StdAlloc_delete(Ptr this, Ptr buf) {
