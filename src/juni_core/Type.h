@@ -4,10 +4,9 @@
 
 typedef STRUCTDECL(Type);
 
-typedef UNIQUENUM(u8, TypeCopyFlag);
-enum {
+typedef enum : u8 {
 	TypeCopyFlag_BIT_DUPLICATE
-};
+} TypeCopyFlag;
 
 typedef struct {
 	Printable (*repr)(Ptr this);
@@ -137,7 +136,6 @@ Type Type_copy(Type this, Allocator alc, TypeCopyFlag flags) {
 	UNREACHABLE;
 
 	do_copy:;
-
 	return Type_iface(this)->copy(Type_this(this), IPASS(Allocator, alc), flags);
 }
 
@@ -152,7 +150,6 @@ void Type_destroy(Type this, Allocator alc) {
 
 	UNREACHABLE;
 }
-
 
 Printable Type_repr(Type this) {
 	return Type_iface(this)->repr(Type_this(this));

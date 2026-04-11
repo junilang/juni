@@ -1,8 +1,6 @@
-typedef struct {
-	const ubyte *data;
-	u64 size;
-	u64 capacity;
-} Vec64;
+#ifndef Vec32_SAFE
+	#define Vec32_SAFE BUILD_SAFE
+#endif
 
 typedef struct {
 	const ubyte *data;

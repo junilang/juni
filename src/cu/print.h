@@ -13,6 +13,7 @@ PRINT_GENERATE_PRIMITIVE(long, long, "%li")
 PRINT_GENERATE_PRIMITIVE(ulong, unsigned long, "%lu")
 PRINT_GENERATE_PRIMITIVE(llong, long long, "%lli")
 PRINT_GENERATE_PRIMITIVE(ullong, unsigned long long, "%llu")
+PRINT_GENERATE_PRIMITIVE(ptr, void*, "%p")
 
 void PRINT_byte(OutStream os, unsigned char value) {
 	static const char hex_digits[] = "0123456789ABCDEF";
@@ -28,7 +29,11 @@ void PRINT_char(OutStream os, char value) {
 	OutStream_write(os, (ubyte*)&value, 1);
 }
 
-void PRINT_cstring(OutStream os, const char *cstr) {
+void PRINT_cstring(OutStream os, Str cstr) {
+	if (!cstr) {
+		OutStream_write(os, USTR("(nullstr)"));
+	}
+
 	OutStream_write(os, (const ubyte*)cstr, strlen(cstr));
 }
 
@@ -48,7 +53,8 @@ void PRINT_Printable(OutStream os, Printable prnt) {
 	long long : PRINT_llong, \
 	unsigned long long : PRINT_ullong, \
 	char* : PRINT_cstring, \
-	const char* : PRINT_cstring, \
+	Str : PRINT_cstring, \
+	Ptr : PRINT_ptr, \
 	Printable : PRINT_Printable \
 )(S, (A))
 
