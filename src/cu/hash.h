@@ -42,7 +42,7 @@ uhash HASH_String(String value, uhash base) {
 	u32 : HASH_u32, \
 	u64 : HASH_u64, \
 	Ptr : HASH_Ptr, \
-	String : HASH_String, \
+	String : HASH_String \
 )(value, base)
 
 #define HASH_COMBINE HASH_u64

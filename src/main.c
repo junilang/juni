@@ -10,6 +10,9 @@
 #include "juni_core/_include.h"
 #include "juni_core/_include.c"
 
+#include "juni_typing/_include.h"
+#include "juni_typing/_include.c"
+
 #if BUILD_TESTING
 	#include "test.c"
 

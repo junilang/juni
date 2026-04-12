@@ -1,6 +1,6 @@
 #define IPrintable_GENERATE_INTERFACE(N) \
 	const IPrintable IPrintable_##N = { \
-		.print = &IPrintable_##N_print \
+		.print = &IPrintable_##N##_print \
 	};
 
 #define IPrintable_GENERATE_METHODS(N, E) \
@@ -28,7 +28,14 @@
 
 #endif
 
-#define IPrintable_GENERATE(N, E) \
+#define IPrintable_GENERATE_(N, E, REGISTER) \
 	IPrintable_GENERATE_METHODS(N, E) \
 	IPrintable_GENERATE_INTERFACE(N) \
+	REGISTER(N) \
 	IPrintable_GENERATE_UPCAST(N, E)
+
+#define IPrintable_GENERATE_KNOWN(N, E) \
+	IPrintable_GENERATE_(N, E, IPrintable_REGISTER_KNOWN)
+
+#define IPrintable_GENERATE(N, E) \
+	IPrintable_GENERATE_(N, E, IPrintable_REGISTER)
