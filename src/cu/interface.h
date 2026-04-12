@@ -7,7 +7,7 @@
 			PANIC(#I"__register_known: id > known"); \
 		I##__registry[(usize)id] = *iface; \
 	} \
-	Id I##_register(const I *iface) { \
+	Id I##__register(const I *iface) { \
 		Id id = (Id)I##__registry_index; \
 		if (id >= (I##_KNOWN + Slots)) { \
 			PANIC(#I"__register: id overflow") \
@@ -18,9 +18,9 @@
 	}
 
 #define INTERFACE_REGISTER(I, N) \
-	I##_registry_Id I##_##N##_ID; \
+	I##__registry_Id I##_##N##_ID; \
 	void __attribute__((constructor(150))) I##_##N##__ctor() { \
-		I##_##N##__ID= I##__register(&I##_##N); \
+		I##_##N##_ID= I##__register(&I##_##N); \
 	}
 
 #define INTERFACE_REGISTER_KNOWN(I, N) \
