@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbit.h>
 
 #include "cu/_include.h"
 #include "cu/_include.c"

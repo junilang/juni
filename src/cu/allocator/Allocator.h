@@ -52,6 +52,12 @@ Ptr Allocator_new(Allocator this, usize size) {
 	return Allocator_iface(this)->new(Allocator_this(this), size);
 }
 
+Ptr Allocator_znew(Allocator this, usize size) {
+	Ptr buf = Allocator_new(this, size);
+	memset(buf, 0, size);
+	return buf;
+}
+
 Ptr Allocator_resize(Allocator this, Ptr buf, usize size) {
 	return Allocator_iface(this)->resize(Allocator_this(this), buf, size);
 }

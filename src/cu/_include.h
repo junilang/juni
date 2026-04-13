@@ -4,6 +4,8 @@
 #include "panic.h"
 #include "usize.h"
 
+#include "whitespace.h"
+
 #include "ptrtag.h"
 #include "interface.h"
 #include "String.h"
@@ -18,3 +20,5 @@
 #include "allocator/Allocator.h"
 
 #include "Vec.h"
+
+#include "trie/Trie.h"
