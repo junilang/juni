@@ -33,7 +33,8 @@ uint ZZTrieBranch_index(
 			return (
 				stdc_count_ones_ull(this->map[0]) +
 				stdc_count_ones_ull(this->map[1]) +
-				stdc_count_ones_ull(this->map[2] & (map_bit - 1))
+				stdc_count_ones_ull(this->map[2]) +
+				stdc_count_ones_ull(this->map[3] & (map_bit - 1))
 			);
 	}
 
