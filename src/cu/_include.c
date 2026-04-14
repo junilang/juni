@@ -1,3 +1,3 @@
-#include "FileOutStream.c"
+#include "outstream/FileOutStream.c"
 
-#include "StdAlloc.c"
+#include "allocator/Malloc.c"
