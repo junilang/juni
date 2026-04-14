@@ -7,6 +7,8 @@
 #include "whitespace.h"
 
 #include "ptrtag.h"
+#include "lptrtag.h"
+
 #include "interface.h"
 #include "String.h"
 
@@ -20,5 +22,9 @@
 #include "allocator/Allocator.h"
 
 #include "Vec.h"
+#include "Vec32.h"
 
 #include "trie/Trie.h"
+
+#include "Rc.h"
+#include "Arc.h"

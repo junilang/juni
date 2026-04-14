@@ -36,7 +36,11 @@
 
 #endif
 
-#define IAllocator_GENERATE(N) \
+#define IAllocator_GENERATE_(N, REGISTER) \
 	IAllocator_GENERATE_METHODS(N) \
 	IAllocator_GENERATE_INTERFACE(N) \
+	REGISTER(N) \
 	IAllocator_GENERATE_UPCAST(N)
+
+#define IAllocator_GENERATE(N) IAllocator_GENERATE_(N, IAllocator_REGISTER)
+#define IAllocator_GENERATE_KNOWN(N) IAllocator_GENERATE_(N, IAllocator_REGISTER_KNOWN)
