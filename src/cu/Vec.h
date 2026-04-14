@@ -14,13 +14,15 @@ void Vec_einit(Vec *this) {
 	this->size = 0;
 }
 
-void Vec_init(Vec *this, u64 capacity, Allocator alc) {
+void Vec_init(Vec *this, usize capacity, Allocator alc) {
 	this->size = 0;
 	this->capacity = capacity;
-	if (capacity)
-		this->data = Allocator_new(alc, capacity);
-	else
-		this->data = nullptr;
+
+	#if Vec_SAFE
+		if (!capacity) PANIC("Vec_init: capacity = 0")
+	#endif
+
+	this->data = Allocator_new(alc, capacity);
 }
 
 void Vec_destroy(Vec *this, Allocator alc) {
@@ -64,10 +66,13 @@ Ptr Vec_append(Vec *this, usize size, Allocator alc) {
 }
 
 void Vec_drop(Vec *this, usize size) {
-	if (size > this->size)
-		this->size = 0;
-	else
-		this->size -= size;
+	#if Vec_SAFE
+		if (size > this->size) {
+			this->size = 0;
+			return;
+		}
+	#endif
+	this->size -= size;
 }
 
 void Vec_clear(Vec *this) {

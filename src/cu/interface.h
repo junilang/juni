@@ -3,8 +3,11 @@
 	I I##__registry[I##_KNOWN + Slots] = {0}; \
 	usize I##__registry_index = I##_KNOWN; \
 	void I##__register_known(Id id, const I *iface) { \
-		if (id >= I##_KNOWN) \
-			PANIC(#I"__register_known: id > known"); \
+		GCC_DIAG_PUSH \
+		GCC_DIAG_IGNORE(WTYPELIMITS) \
+			if (id >= I##_KNOWN) \
+				PANIC(#I"__register_known: id > known"); \
+		GCC_DIAG_POP \
 		I##__registry[(usize)id] = *iface; \
 	} \
 	Id I##__register(const I *iface) { \

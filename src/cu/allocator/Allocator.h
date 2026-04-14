@@ -18,7 +18,7 @@ typedef struct {
 	} Allocator;
 
 	enum {
-		IAllocator_StdAlloc_ID,
+		IAllocator_Malloc_ID,
 		IAllocator_KNOWN
 	};
 
