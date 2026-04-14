@@ -16,5 +16,11 @@ static_assert(alignof(uintptr_t) == alignof(size_t));
 
 typedef uintptr_t usize;
 typedef ptrdiff_t isize;
+typedef uint16_t ualign;
+
+typedef unsigned int uint;
 
 typedef void *Ptr;
+typedef const char *Str;
+
+#define USIZE_MAX UINTPTR_MAX

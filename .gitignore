@@ -3,6 +3,8 @@ out
 .ccls
 .ccls-cache
 .archive
+.vscode
+.zed
 compile_flags.txt
 project_local.json
 tests/scratch

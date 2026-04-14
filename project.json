@@ -13,6 +13,7 @@
 	"macros": {
 		"BUILD_DEBUG": "false",
 		"BUILD_RELEASE": "false",
+		"BUILD_SAFE": "true",
 		"BUILD_TESTING": "false",
 		"BUILD_ASAN": "false"
 	},
@@ -33,7 +34,9 @@
 		"macros": {
 			"BUILD_DEBUG": "true",
 			"BUILD_RELEASE": "true",
-			"BUILD_TESTING": "true"
+			"BUILD_SAFE": "true",
+			"BUILD_TESTING": "true",
+			"BUILD_ASAN": "true"
 		}
 	},
 

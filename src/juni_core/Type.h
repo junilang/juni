@@ -4,16 +4,16 @@
 
 typedef STRUCTDECL(Type);
 
-typedef UNIQUENUM(u8, TypeCopyFlag);
-enum {
+typedef enum : u8 {
 	TypeCopyFlag_BIT_DUPLICATE
-};
+} TypeCopyFlag;
 
 typedef struct {
 	Printable (*repr)(Ptr this);
-	Type (*copy)(Ptr this, IARG(Allocator, alc), TypeCopyFlag flags);
+	Type (*copy)(Ptr this, TypeCopyFlag flags, IARG(Allocator, alc));
 	void (*destroy)(Ptr this, IARG(Allocator, alc));
 	uhash (*hash)(Ptr this, uhash base);
+	bool (*equal)(Ptr this, Ptr other);
 } IType;
 
 typedef enum : u8 {
@@ -83,7 +83,7 @@ typedef enum : u8 {
 	}
 
 	TypeId Type_id(Type this) {
-		return (usize)Type_iface(this);
+		return (TypeId)Type_iface(this);
 	}
 
 	Ptr Type_this(Type this) { return this.this; }
@@ -121,7 +121,7 @@ Type Type_move(Type this) {
 	UNREACHABLE;
 }
 
-Type Type_copy(Type this, Allocator alc, TypeCopyFlag flags) {
+Type Type_copy(Type this, TypeCopyFlag flags, Allocator alc) {
 	if (flags & FLAG(TypeCopyFlag, DUPLICATE))
 		goto do_copy;
 
@@ -137,8 +137,7 @@ Type Type_copy(Type this, Allocator alc, TypeCopyFlag flags) {
 	UNREACHABLE;
 
 	do_copy:;
-
-	return Type_iface(this)->copy(Type_this(this), IPASS(Allocator, alc), flags);
+	return Type_iface(this)->copy(Type_this(this), flags, IPASS(Allocator, alc));
 }
 
 void Type_destroy(Type this, Allocator alc) {
@@ -153,7 +152,6 @@ void Type_destroy(Type this, Allocator alc) {
 	UNREACHABLE;
 }
 
-
 Printable Type_repr(Type this) {
 	return Type_iface(this)->repr(Type_this(this));
 }
@@ -161,4 +159,10 @@ Printable Type_repr(Type this) {
 uhash Type_hash(Type this, uhash base) {
 	return Type_iface(this)->hash(Type_this(this), base);
 }
+
+bool Type_equal(Type this, Type other) {
+	if (Type_id(this) != Type_id(other)) return false;
+	return Type_iface(this)->equal(Type_this(this), Type_this(other));
+}
+
 #include "Type_meta.h"
