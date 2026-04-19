@@ -83,7 +83,7 @@ Trie TrieBranch_set(
 		if (isconst) {
 			#if Trie_CONSERVATIVE
 
-				Trie next = Trie_set(Trie_const(this->next[idx]),
+				Trie next = ZZTrie_set(Trie_const(this->next[idx]),
 					segment + 1, segment_size - 1, value, alc
 				);
 
@@ -103,7 +103,7 @@ Trie TrieBranch_set(
 			}
 
 			#if !Trie_CONSERVATIVE
-				Trie next = Trie_set(Trie_const(this->next[idx]),
+				Trie next = ZZTrie_set(Trie_const(this->next[idx]),
 					segment + 1, segment_size - 1, value, alc
 				);
 			#endif
@@ -117,7 +117,7 @@ Trie TrieBranch_set(
 
 			return Trie_upcast(data, FLAG(TrieFlag, BRANCH) | isoccupied);
 		} else {
-			this->next[idx] = Trie_set(
+			this->next[idx] = ZZTrie_set(
 				this->next[idx],
 				segment + 1, segment_size - 1,
 				value, alc
@@ -205,7 +205,7 @@ Trie TrieBranch_unset(
 	uint this_size = ZZTrieBranch_size(this);
 
 	if (isconst) {
-		Trie next = Trie_unset(Trie_const(this->next[idx]),
+		Trie next = ZZTrie_unset(Trie_const(this->next[idx]),
 			segment + 1, segment_size - 1, alc
 		);
 
@@ -270,7 +270,7 @@ Trie TrieBranch_unset(
 		}
 
 	} else {
-		Trie next = Trie_unset(this->next[idx],
+		Trie next = ZZTrie_unset(this->next[idx],
 			segment + 1, segment_size - 1, alc
 		);
 

@@ -104,7 +104,7 @@ Trie TrieSegment_set(
 				// if conservative mode is enabled, first modify next node, then
 				// allocate the copy of this node if the modified node changed
 
-				Trie next = Trie_set(Trie_const(this->next),
+				Trie next = ZZTrie_set(Trie_const(this->next),
 					segment + idx, segment_size - idx, value, alc
 				);
 
@@ -119,7 +119,7 @@ Trie TrieSegment_set(
 
 				TrieSegment *data = Allocator_new(alc, ZZTrieSegment_allocsize(this_size));
 
-				data->next = Trie_set(Trie_const(this->next),
+				data->next = ZZTrie_set(Trie_const(this->next),
 					segment + idx, segment_size - idx, value, alc
 				);
 			#endif
@@ -129,7 +129,7 @@ Trie TrieSegment_set(
 			memcpy(data->bytes, this->bytes, this_size);
 			return Trie_upcast(data, isoccupied);
 		} else {
-			this->next = Trie_set(this->next,
+			this->next = ZZTrie_set(this->next,
 				segment + idx, segment_size - idx, value, alc
 			);
 			return Trie_upcast(this, isoccupied);
@@ -265,7 +265,7 @@ Trie TrieSegment_unset(
 	}
 
 	if (isconst) {
-		Trie next = Trie_unset(Trie_const(this->next),
+		Trie next = ZZTrie_unset(Trie_const(this->next),
 			segment + this_size, segment_size - this_size, alc
 		);
 
@@ -287,7 +287,7 @@ Trie TrieSegment_unset(
 			return Trie_upcast(data, isoccupied);
 		}
 	} else {
-		Trie next = Trie_unset(this->next,
+		Trie next = ZZTrie_unset(this->next,
 			segment + this_size, segment_size - this_size, alc
 		);
 

@@ -1,8 +1,9 @@
-#include <stdatomic.h>
 typedef struct {
 	const ubyte *data;
 	usize size;
 } String;
+
+#define String_NULL ((String){.data=nullptr,.size=0})
 
 void String_print(String this, OutStream os) {
 	OutStream_write(os, this.data, this.size);
@@ -16,6 +17,8 @@ typedef struct {
 	const ubyte *begin;
 	const ubyte *end;
 } StringSpan;
+
+#define StringSpan_NULL ((StringSpan){.begin=nullptr,.end=nullptr})
 
 void StringSpan_print(StringSpan this, OutStream os) {
 	OutStream_write(os, this.begin, (usize)(this.end - this.begin));
@@ -59,7 +62,11 @@ uhash StringSpan_hash(StringSpan this, uhash base) {
 
 		return (SmallString){ptrtag((Ptr)data, (utag)size)};
 	}
+
+	#define SmallString_NULL ((SmallString){nullptr})
 #else
+
+	#define SmallString_MAX SIZE_MAX
 
 	typedef struct {
 		const ubyte *data;
@@ -77,6 +84,8 @@ uhash StringSpan_hash(StringSpan this, uhash base) {
 	SmallString SmallString_upcast(const ubyte *data, usize size) {
 		return (SmallString){.data=data,.size=size};
 	}
+
+	#define SmallString_NULL ((SmallString){.data=nullptr,.size=0})
 
 #endif
 
