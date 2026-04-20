@@ -16,6 +16,8 @@
 #include "printable/Printable.h"
 
 #include "String.h"
+#include "VString.h"
+
 #include "print.h"
 
 #include "allocator/Allocator.h"
