@@ -62,6 +62,7 @@ void PRINT_cstring(Str cstr, OutStream os) {
 	String : String_print, \
 	StringSpan : StringSpan_print, \
 	SmallString : SmallString_print, \
+	VString : VString_print, \
 	Printable : Printable_print \
 )((A), (S))
 

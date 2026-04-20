@@ -1,6 +1,10 @@
 typedef enum : u8 {
-	ParserResult_OK,
-	ParserResult_ERROR
+	ParserCode_OK,
+	ParserCode_ERROR
+} ParserCode;
+
+typedef struct {
+	ParserCode code;
 } ParserResult;
 
 typedef struct {
@@ -62,10 +66,10 @@ ParserResult Parser_entry(ParserContext *ctx, Trie db, SourceRef src, SourcePos 
 	}
 
 	if (!value_end) {
-		return ParserResult_ERROR;
+		return (ParserResult) {ParserCode_ERROR};
 	}
 
-	FPRINT(stdout, pos.row,":",pos.col," ",value,"\n");
+	PDBG(pos.row,":",pos.col," ",value);
 
 	it = value_end;
 	pos = SourcePos_advance(pos, buf.begin, value_end);

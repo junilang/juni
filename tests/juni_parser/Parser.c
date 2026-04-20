@@ -1,5 +1,5 @@
 int ZZentry(testing_TestContext *ctx) {
-
+	PDBG_INIT(FileOutStream_upcast(stderr));
 
 	Trie db = Trie_NULL;
 
