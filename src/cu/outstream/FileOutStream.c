@@ -6,5 +6,4 @@ void FileOutStream_flush(FILE *this) {
 	fflush(this);
 }
 
-IOutStream_GENERATE(FileOutStream)
-IOutStream_REGISTER_KNOWN(FileOutStream)
+IOutStream_GENERATE_KNOWN(FileOutStream)

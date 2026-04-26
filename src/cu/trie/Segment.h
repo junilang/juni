@@ -336,16 +336,11 @@ void TrieSegment_print(Trie vthis, TrieSize depth, OutStream os) {
 	if (isoccupied) PRINT(os, "(",(Ptr)this->value,") ");
 
 	if (this->size) {
-		const String s = {
-			.data = this->bytes,
-			.size = this->size
-		};
-
-		PRINT(os, s," ");
+		PRINT(os, "\"",VString_upcast(this->bytes, this->size, FLAG(VStringFlag, KEEPUTF)),"\" ");
 	}
 
 	const Trie next = this->next;
 	if (Trie_isnull(this->next)) return;
 
-	Trie_print(next, depth, os);
+	ZZTrie_print(next, depth, os);
 }

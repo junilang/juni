@@ -34,7 +34,6 @@ void VString_print(VString this, OutStream os) {
 
 	ubyte smallbuf[16];
 	ubyte buffer[256];
-	const ubyte *bend = buffer + sizeof(buffer);
 	ubyte *bp = buffer;
 
 	const ubyte *it = this.data;
@@ -129,7 +128,7 @@ void VString_print(VString this, OutStream os) {
 
 		// utf8 continuation byte
 		if (XISUTFCONT(c)) malformed_utf: {
-			repr.size = (usize)snprintf((char*)smallbuf, sizeof(smallbuf), "&?%02X;", c);
+			repr.size = (usize)snprintf((char*)smallbuf, sizeof(smallbuf), "&?%u;", c);
 			repr.data = smallbuf;
 			goto putc;
 		}

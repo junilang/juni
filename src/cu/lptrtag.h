@@ -1,5 +1,5 @@
 #ifndef LPTRTAG_SAFE
-	#define LPTRTAG_SAFE PTRTAG
+	#define LPTRTAG_SAFE BUILD_SAFE
 #endif
 
 Ptr lptrtag(const Ptr ptr, uint width, usize value) {

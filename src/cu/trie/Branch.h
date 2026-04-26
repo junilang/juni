@@ -344,13 +344,9 @@ void TrieBranch_print(Trie vthis, TrieSize depth, OutStream os) {
 			String indent = {.data=g_whitespace,.size=depth * 3};
 			PRINT(os, "\n",indent);
 
-			if (c < 32 || c > 127) {
-				PRINT(os, "|- \\",(ubyte)c," ");
-			} else {
-				PRINT(os, "|- ",(char)c," ");
-			}
+			PRINT(os, "|- '",VString_upcast(&c, 1, FLAG(VStringFlag, KEEPUTF)),"' ")
 
-			Trie_print(this->next[child_idx], depth + 1, os);
+			ZZTrie_print(this->next[child_idx], depth + 1, os);
 			child_idx++;
 			map &= map - 1;
 		}

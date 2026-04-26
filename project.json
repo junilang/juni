@@ -15,7 +15,9 @@
 		"BUILD_RELEASE": "false",
 		"BUILD_SAFE": "true",
 		"BUILD_TESTING": "false",
-		"BUILD_ASAN": "false"
+		"BUILD_ASAN": "false",
+		"BUILD_UBSAN": "false",
+		"BUILD_ASM": "false"
 	},
 
 	"flags": [
@@ -25,6 +27,7 @@
 		"-Wextra",
 		"-Werror=vla",
 		"-Wconversion",
+		"-Wimplicit-fallthrough",
 		"-Wno-unused-function",
 		"-Wno-unused-parameter"
 	],
@@ -36,7 +39,9 @@
 			"BUILD_RELEASE": "true",
 			"BUILD_SAFE": "true",
 			"BUILD_TESTING": "true",
-			"BUILD_ASAN": "true"
+			"BUILD_ASAN": "true",
+			"BUILD_UBSAN": "true",
+			"BUILD_ASM": "true"
 		}
 	},
 
@@ -49,13 +54,23 @@
 
 	"profile_asm": {
 		"out_binary": "juni.s",
-		"flags": [ "-masm=intel", "-fverbose-asm", "-S" ]
+		"flags": [ "-masm=intel", "-fverbose-asm", "-S" ],
+		"macros": {
+			"BUILD_ASM": "true"
+		}
 	},
 
 	"profile_asan": {
 		"flags": [ "-fsanitize=address" ],
 		"macros": {
 			"BUILD_ASAN": "true"
+		}
+	},
+
+	"profile_ubsan": {
+		"flags": [ "-fsanitize=undefined"],
+		"macros": {
+			"BUILD_UBSAN": "true"
 		}
 	},
 

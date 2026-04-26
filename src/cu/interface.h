@@ -1,6 +1,6 @@
 #define INTERFACE_REGISTRY(I, Id, Slots) \
 	typedef Id I##__registry_Id; \
-	I I##__registry[I##_KNOWN + Slots] = {0}; \
+	I I##__registry[I##_KNOWN + Slots] = {}; \
 	usize I##__registry_index = I##_KNOWN; \
 	void I##__register_known(Id id, const I *iface) { \
 		GCC_DIAG_PUSH \

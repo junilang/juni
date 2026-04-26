@@ -37,6 +37,10 @@ typedef struct {
 #endif
 
 void OutStream_write(OutStream this, const ubyte *buffer, usize buffer_size) {
+	#if BUILD_SAFE
+		if (!buffer) return;
+	#endif
+
 	OutStream_iface(this)->write(OutStream_this(this), buffer, buffer_size);
 }
 

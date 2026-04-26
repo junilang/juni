@@ -5,7 +5,7 @@ typedef struct {
 } SourcePos;
 
 #define SourcePos_DEFAULT_COL 1
-#define SourcePos_NULL ((SourcePos){.offset=0,.row=1,.col=SourcePos_DEFAULT_COL})
+#define SourcePos_NULL LITERAL(SourcePos,.offset=0,.row=1,.col=SourcePos_DEFAULT_COL)
 
 SourcePos SourcePos_advance(SourcePos pos, const ubyte *it, const ubyte *end) {
 	pos.offset += (usize)(end - it);

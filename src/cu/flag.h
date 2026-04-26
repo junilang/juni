@@ -1,5 +1,5 @@
 #define FLAG_X(pfx, flag) (1ULL << pfx##_BIT_##flag)
-#define FLAG_8(pfx, flag, ...) FLAG_X(pfx, flag)__VA_OPT__(;FLAG_MAX_DEPTH_REACHED)
+#define FLAG_8(pfx, flag, ...) FLAG_X(pfx, flag)__VA_OPT__(;GCC_ERROR_MAX_DEPTH_REACHED)
 #define FLAG_7(pfx, flag, ...) FLAG_X(pfx, flag)__VA_OPT__(|FLAG_8(pfx, __VA_ARGS__))
 #define FLAG_6(pfx, flag, ...) FLAG_X(pfx, flag)__VA_OPT__(|FLAG_7(pfx, __VA_ARGS__))
 #define FLAG_5(pfx, flag, ...) FLAG_X(pfx, flag)__VA_OPT__(|FLAG_6(pfx, __VA_ARGS__))

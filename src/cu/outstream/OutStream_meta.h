@@ -32,7 +32,14 @@
 
 #endif
 
-#define IOutStream_GENERATE(N) \
+#define IOutStream_GENERATE_(N, REGISTER) \
 	IOutStream_GENERATE_METHODS(N) \
 	IOutStream_GENERATE_INTERFACE(N) \
-	IOutStream_GENERATE_UPCAST(N)
+	IOutStream_GENERATE_UPCAST(N) \
+	REGISTER(N)
+
+#define IOutStream_GENERATE(N) \
+	IOutStream_GENERATE_(N, IOutStream_REGISTER)
+
+#define IOutStream_GENERATE_KNOWN(N) \
+	IOutStream_GENERATE_(N, IOutStream_REGISTER_KNOWN)

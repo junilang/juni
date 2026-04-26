@@ -132,7 +132,7 @@ void Trie_destroy(
 	Allocator alc
 );
 
-void Trie_print(
+void ZZTrie_print(
 	Trie this,
 	TrieSize depth,
 	OutStream os
@@ -214,17 +214,22 @@ void Trie_destroy(
 	}
 }
 
-void Trie_print(
-	Trie this,
-	TrieSize depth,
-	OutStream os
-) {
-	if (Trie_isnull(this))
-		return;
-
+void ZZTrie_print(Trie this, TrieSize depth, OutStream os) {
 	if (Trie_isbranch(this)) {
 		return TrieBranch_print(this, depth, os);
 	} else {
 		return TrieSegment_print(this, depth, os);
 	}
+}
+
+void Trie_print(
+	Trie this,
+	OutStream os
+) {
+	if (Trie_isnull(this)) {
+		OutStream_write(os, USTR("Trie_NULL\n"));
+		return;
+	}
+	ZZTrie_print(this, 1, os);
+	OutStream_write(os, USTR("\n"));
 }

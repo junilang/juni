@@ -5,6 +5,8 @@
 		OutStream_write(os, (ubyte*)buf, (usize)sz); \
 	}
 
+PRINT_GENERATE_PRIMITIVE(char, char, "%i")
+PRINT_GENERATE_PRIMITIVE(uchar, unsigned char, "%u")
 PRINT_GENERATE_PRIMITIVE(short, short, "%hi")
 PRINT_GENERATE_PRIMITIVE(ushort, unsigned short, "%hu")
 PRINT_GENERATE_PRIMITIVE(int, int, "%i")
@@ -15,6 +17,7 @@ PRINT_GENERATE_PRIMITIVE(llong, long long, "%lli")
 PRINT_GENERATE_PRIMITIVE(ullong, unsigned long long, "%llu")
 PRINT_GENERATE_PRIMITIVE(ptr, void*, "%p")
 
+/*
 void PRINT_byte(unsigned char value, OutStream os) {
 	static const char hex_digits[] = "0123456789ABCDEF";
 	char buf[2] = {
@@ -24,6 +27,7 @@ void PRINT_byte(unsigned char value, OutStream os) {
 
 	OutStream_write(os, (ubyte*)buf, 2);
 }
+*/
 
 void PRINT_bool(bool value, OutStream os) {
 	if (value)
@@ -32,9 +36,11 @@ void PRINT_bool(bool value, OutStream os) {
 		OutStream_write(os, USTR("false"));
 }
 
+/*
 void PRINT_char(char value, OutStream os) {
 	OutStream_write(os, (ubyte*)&value, 1);
 }
+*/
 
 void PRINT_cstring(Str cstr, OutStream os) {
 	if (!cstr) {
@@ -46,7 +52,7 @@ void PRINT_cstring(Str cstr, OutStream os) {
 
 #define PRINT_ITEM(S, A) _Generic((A), \
 	char : PRINT_char, \
-	unsigned char : PRINT_byte, \
+	unsigned char : PRINT_uchar, \
 	short : PRINT_short, \
 	unsigned short : PRINT_ushort, \
 	int : PRINT_int, \
@@ -66,7 +72,7 @@ void PRINT_cstring(Str cstr, OutStream os) {
 	Printable : Printable_print \
 )((A), (S))
 
-#define PRINT_X(S, A, ...) PRINT_ITEM(S, A); __VA_OPT__(MAX_PRINT_DEPTH_REACHED)
+#define PRINT_X(S, A, ...) PRINT_ITEM(S, A); __VA_OPT__(GCC_ERROR_MAX_DEPTH_REACHED)
 #define PRINT_9(S, A, ...) PRINT_ITEM(S, A); __VA_OPT__(PRINT_X(S, __VA_ARGS__))
 #define PRINT_8(S, A, ...) PRINT_ITEM(S, A); __VA_OPT__(PRINT_9(S, __VA_ARGS__))
 #define PRINT_7(S, A, ...) PRINT_ITEM(S, A); __VA_OPT__(PRINT_8(S, __VA_ARGS__))

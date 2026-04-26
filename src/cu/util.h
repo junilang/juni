@@ -19,10 +19,22 @@
 
 	#define GCC_DIAG_IGNORE(...) __VA_OPT__(GCC_PRAGMA_1(GCC_DIAG_IGNORE_, __VA_ARGS__))
 
+	#if BUILD_ASM
+		#define SHOWASM __attribute__((used, retain, externally_visible, section("SHOWASM")))
+	#endif
+
+	#define FALLTHROUGH __attribute__((fallthrough))
+
 #else
 
 	#define GCC_DIAG_PUSH
 	#define GCC_DIAG_POP
 	#define GCC_IGNORE(...)
 
+	#define FALLTHROUGH
+
+#endif
+
+#ifndef SHOWASM
+	#define SHOWASM
 #endif

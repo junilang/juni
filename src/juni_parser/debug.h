@@ -7,7 +7,6 @@
 #endif
 
 #if PDBG_ENABLE
-
 	_Thread_local OutStream PDBG_os;
 	_Thread_local uint PDBG_depth = 0;
 

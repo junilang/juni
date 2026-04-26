@@ -19,7 +19,8 @@ typedef struct {
 typedef enum : u8 {
 	TypeSc_COPY,
 	TypeSc_MOVE,
-	TypeSc_CONST
+	TypeSc_CONST,
+	TypeSc_ENUM
 } TypeSc;
 
 #define TypeSc__BITS 2
@@ -31,6 +32,9 @@ typedef enum : u8 {
 	};
 
 	enum {
+		IType_NullType_ID,
+		IType_SetType_ID,
+		IType_UnionType_ID,
 		IType_KNOWN
 	};
 
@@ -54,14 +58,14 @@ typedef enum : u8 {
 
 	Type ZZType_setsc(Type this, TypeSc sc) {
 		return (Type) {
-			(Ptr)(((usize)this.value & (~TypeSc__MASK)) | (usize)sc)
+			ptrtag(ptrstrip(this.value), (utag)((ptrread(this.value) & (~TypeSc__MASK)) | sc))
 		};
 	}
 
 #else
 	// ensure that bottom 2 bits of interface pointer
 	// are usable for storage class tag
-	static_assert(alignof(IType) > TypeSc__BITS);
+	static_assert(alignof(IType) > TypeSc__MASK);
 
 	typedef struct {
 		Ptr value;
@@ -100,6 +104,7 @@ typedef enum : u8 {
 Type Type_const(Type this) {
 	switch (Type_sc(this)) {
 		case TypeSc_CONST:
+		case TypeSc_ENUM:
 			return this;
 		case TypeSc_COPY:
 		case TypeSc_MOVE:
@@ -109,9 +114,23 @@ Type Type_const(Type this) {
 	UNREACHABLE;
 }
 
+bool Type_isconst(Type this) {
+	switch (Type_sc(this)) {
+		case TypeSc_CONST:
+		case TypeSc_ENUM:
+			return true;
+		case TypeSc_COPY:
+		case TypeSc_MOVE:
+			return false;
+	}
+
+	UNREACHABLE;
+}
+
 Type Type_move(Type this) {
 	switch (Type_sc(this)) {
 		case TypeSc_CONST:
+		case TypeSc_ENUM:
 		case TypeSc_MOVE:
 			return this;
 		case TypeSc_COPY:
@@ -121,17 +140,36 @@ Type Type_move(Type this) {
 	UNREACHABLE;
 }
 
+bool Type_ismove(Type this) {
+	switch (Type_sc(this)) {
+		case TypeSc_MOVE:
+			return true;
+		case TypeSc_CONST:
+		case TypeSc_ENUM:
+		case TypeSc_COPY:
+			return false;
+
+	}
+
+	UNREACHABLE;
+}
+
 Type Type_copy(Type this, TypeCopyFlag flags, Allocator alc) {
+	const TypeSc sc = Type_sc(this);
+	if (sc == TypeSc_ENUM) return this;
+
 	if (flags & FLAG(TypeCopyFlag, DUPLICATE))
 		goto do_copy;
 
-	switch (Type_sc(this)) {
+	switch (sc) {
 		case TypeSc_CONST:
 			return this;
 		case TypeSc_MOVE:
 			return ZZType_setsc(this, TypeSc_COPY);
 		case TypeSc_COPY:
 			goto do_copy;
+
+		case TypeSc_ENUM:
 	}
 
 	UNREACHABLE;
@@ -143,10 +181,12 @@ Type Type_copy(Type this, TypeCopyFlag flags, Allocator alc) {
 void Type_destroy(Type this, Allocator alc) {
 	switch (Type_sc(this)) {
 		case TypeSc_CONST:
+		case TypeSc_ENUM:
 			return;
 		case TypeSc_MOVE:
 		case TypeSc_COPY:
 			Type_iface(this)->destroy(Type_this(this), IPASS(Allocator, alc));
+			return;
 	}
 
 	UNREACHABLE;
@@ -157,11 +197,25 @@ Printable Type_repr(Type this) {
 }
 
 uhash Type_hash(Type this, uhash base) {
-	return Type_iface(this)->hash(Type_this(this), base);
+	const TypeId id = Type_id(this);
+	if (Type_sc(this) == TypeSc_ENUM)
+		return HASH(id, HASH(Type_this(this), base));
+
+	return HASH(id, Type_iface(this)->hash(Type_this(this), base));
 }
 
 bool Type_equal(Type this, Type other) {
 	if (Type_id(this) != Type_id(other)) return false;
+
+	if (
+		(Type_sc(this) == TypeSc_ENUM)
+
+		#if BUILD_SAFE
+			&& (Type_sc(other) == TypeSc_ENUM)
+		#endif
+	)
+		return Type_this(this) == Type_this(other);
+
 	return Type_iface(this)->equal(Type_this(this), Type_this(other));
 }
 
