@@ -6,17 +6,14 @@
 #include <stdbit.h>
 #include <stdatomic.h>
 
-#include "cu/_include.h"
-#include "cu/_include.c"
+#include "util/_include.h"
+#include "util/_include.c"
 
-#include "juni_core/_include.h"
-#include "juni_core/_include.c"
+#include "typing/_include.h"
+#include "typing/_include.c"
 
-#include "juni_typing/_include.h"
-#include "juni_typing/_include.c"
-
-#include "juni_parser/_include.h"
-#include "juni_parser/_include.c"
+#include "parser/_include.h"
+#include "parser/_include.c"
 
 #if BUILD_TESTING
 	#include "test.c"
