@@ -6,6 +6,7 @@ typedef enum : u8 {
 typedef struct {
 	OutStream log;
 	Allocator state_alc;
+	Allocator tmp_alc;
 } ParserContext;
 
 typedef struct {

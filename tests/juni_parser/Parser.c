@@ -27,7 +27,6 @@ int ZZentry(testing_TestContext *ctx) {
 	db = Trie_set(db, USTR("B"), Symbol_init(&sym_type_b.head, SymbolClass_TYPE).value, Malloc);
 
 	SourceRef src = Source_openfile("tests/juni_parser/example.juni", Malloc);
-	SourcePos pos = SourcePos_NULL;
 
 	ParserSubrIO subr_io = {
 		.pos = SourcePos_NULL,
@@ -36,9 +35,11 @@ int ZZentry(testing_TestContext *ctx) {
 	};
 
 	ParserContext parser_ctx = {
-		.state_alc = Malloc
+		.state_alc = Malloc,
+		.tmp_alc = Malloc
 	};
 
+	[[maybe_unused]]
 	ParserResult result = Parser_entry(&parser_ctx, &subr_io);
 
 	Trie_destroy(db, Malloc);

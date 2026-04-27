@@ -3,7 +3,7 @@ Symbol Parser_getsymbol(ParserContext *ctx, Trie symdb, SourceRef src, SourcePos
 
 	const ubyte *it = buf.begin;
 	const ubyte *symbol_end = nullptr;
-	Symbol symbol;
+	Symbol symbol = Symbol_NULL;
 
 	Trie caret = symdb;
 
@@ -52,8 +52,21 @@ Symbol Parser_getsymbol(ParserContext *ctx, Trie symdb, SourceRef src, SourcePos
 		}
 	}
 
-	if (!symbol_end) return Symbol_NULL;
+	#if true
+		PDBG(PDBG_BEGIN, "Symbol(", SymbolClass_Repr[Symbol_class(symbol)], ") ")
+		if (symbol_end) {
+			PDBG("\"", VString_upcast(
+				buf.begin, (usize)(symbol_end - buf.begin),
+				FLAG(VStringFlag, KEEPUTF)
+			), "\" ");
+		}
+		PDBG(Source_name(src),":",pos->row,":",pos->col);
+		PDBG(PDBG_END);
+	#endif
 
-	*pos = SourcePos_advance(*pos, buf.begin, symbol_end);
+	if (symbol_end) {
+		*pos = SourcePos_advance(*pos, buf.begin, symbol_end);
+	}
+
 	return symbol;
 }

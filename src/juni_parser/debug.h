@@ -14,7 +14,11 @@
 	#define PDBG_PUSH PDBG_depth++
 	#define PDBG_POP PDBG_depth--
 
-	#define PDBG(...) PRINT(PDBG_os, STRING_WHITESPACE(PDBG_depth * PDBG_INDENTWIDTH),__VA_ARGS__,"\n")
+	#define PDBG_BEGIN STRING_WHITESPACE(PDBG_depth * PDBG_INDENTWIDTH)
+	#define PDBG_END "\n"
+
+	#define PDBG(...) PRINT(PDBG_os, __VA_ARGS__)
+	#define PDBGL(...) PDBG(PDBG_BEGIN, __VA_ARGS__, PDBG_END)
 
 #else
 
@@ -22,5 +26,9 @@
 	#define PDBG_POP
 	#define PDBG_INIT(...)
 	#define PDBG(...)
+	#define PDBGL(...)
+
+	#define PDBG_BEGIN
+	#define PDBG_END
 
 #endif

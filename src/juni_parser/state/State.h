@@ -16,6 +16,18 @@ typedef enum : u8 {
 	#undef X
 } ParserStateClass;
 
+String ParserStateClass_Repr[] = {
+	#define X(E, N) [ParserStateClass_##E] = STRING(#E),
+		ParserState_XS
+	#undef X
+};
+
+String ParserStateClass_NameRepr[] = {
+	#define X(E, N) [ParserStateClass_##E] = STRING(#N),
+		ParserState_XS
+	#undef X
+};
+
 #if ParserState_PTRTAG
 
 	#define ParserState_HEADER

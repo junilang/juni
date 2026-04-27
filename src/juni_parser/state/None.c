@@ -7,8 +7,6 @@ void ParserState_None_dispatch(
 	next_symbol:;
 	Symbol sym = Parser_getsymbol(ctx, io->symdb, src, &pos);
 
-	PDBG("Symbol_class: ",Symbol_class(sym));
-
 	switch (Symbol_class(sym)) {
 		case SymbolClass_WHITESPACE:
 			goto next_symbol;
