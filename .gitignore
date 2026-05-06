@@ -1,11 +1,11 @@
-*/**/__pycache__
-out
 .ccls
 .ccls-cache
 .archive
 .vscode
 .zed
+
+out
+junimake_local.json
 compile_flags.txt
-project_local.json
 tests/scratch
 tests/scratch.c
