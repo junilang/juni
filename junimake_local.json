@@ -1,0 +1,4 @@
+{
+	"compiler": "/usr/bin/gcc",
+	"flags": [ "-march=native" ]
+}
