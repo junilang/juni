@@ -1,4 +1,4 @@
-int ZZentry(testing_TestContext *ctx) {
+int ZZentry(SilverTestContext *ctx) {
 	TypeSet set; TypeSet_init(&set, Malloc, Malloc);
 
 	Type types[] = {

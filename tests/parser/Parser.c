@@ -1,4 +1,4 @@
-int ZZentry(testing_TestContext *ctx) {
+int ZZentry(SilverTestContext *ctx) {
 	PDBG_INIT(FileOutStream_upcast(stderr));
 
 	SymbolHeader sym_wsp = { .next = Symbol_NULL };

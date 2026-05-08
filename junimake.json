@@ -10,6 +10,8 @@
 
 	"compiler": "cc",
 
+	"includes": {},
+
 	"macros": {
 		"BUILD_DEBUG": "false",
 		"BUILD_RELEASE": "false",

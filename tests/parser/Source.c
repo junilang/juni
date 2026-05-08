@@ -1,4 +1,4 @@
-int ZZentry(testing_TestContext *ctx) {
+int ZZentry(SilverTestContext *ctx) {
 	Str path = "tests/juni_parser/example.juni";
 
 	FILE *file = fopen(path, "r");

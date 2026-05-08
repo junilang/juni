@@ -1,3 +1,3 @@
-int ZZentry(testing_TestContext *ctx) {
+int ZZentry(SilverTestContext *ctx) {
 	return 0;
 }
