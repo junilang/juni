@@ -1,5 +1,5 @@
 int ZZentry(SilverTestContext *ctx) {
-	Str path = "tests/juni_parser/example.juni";
+	Str path = "tests/parser/example.juni";
 
 	FILE *file = fopen(path, "r");
 	if (!file) PANIC("failed to open file");

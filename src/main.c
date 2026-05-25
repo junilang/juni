@@ -6,7 +6,7 @@
 #include <stdbit.h>
 #include <stdatomic.h>
 
-#include <libsilver/_include.h>
+#include <silver/_include.h>
 
 #include "typing/_include.h"
 #include "typing/_include.c"

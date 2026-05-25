@@ -26,7 +26,7 @@ int ZZentry(SilverTestContext *ctx) {
 	db = Trie_set(db, USTR("A"), Symbol_init(&sym_type_a.head, SymbolClass_TYPE).value, Malloc);
 	db = Trie_set(db, USTR("B"), Symbol_init(&sym_type_b.head, SymbolClass_TYPE).value, Malloc);
 
-	SourceRef src = Source_openfile("tests/juni_parser/example.juni", Malloc);
+	SourceRef src = Source_openfile("tests/parser/example.juni", Malloc);
 
 	ParserSubrIO subr_io = {
 		.pos = SourcePos_NULL,
