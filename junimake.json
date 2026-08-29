@@ -23,7 +23,7 @@
 	},
 
 	"flags": [
-		"-std=c23",
+		"-std=gnu23",
 		"-fwhole-program",
 		"-Wall",
 		"-Wextra",
@@ -37,6 +37,7 @@
 	"profile_lsp": {
 		"flags": [ "-xc-header", "-ferror-limit=0" ],
 		"macros": {
+			"LSP": "true",
 			"BUILD_DEBUG": "true",
 			"BUILD_RELEASE": "true",
 			"BUILD_SAFE": "true",
