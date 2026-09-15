@@ -37,6 +37,7 @@ typedef u8 TrieFlag; enum {
 
 constexpr u8 TrieFlag_bits = 3;
 constexpr usize TrieFlag_mask = 0b111ull;
+constexpr ualign Trie_align = TrieFlag_mask + 1;
 
 bool Trie_isbranch(Trie this) {
 	return this.raw_value & FLAG(TrieFlag_Branch);
@@ -80,9 +81,7 @@ typedef struct {
 	Trie next[];
 } TrieBranch;
 
-static_assert(_Alignof(TrieBranch) > TrieFlag_mask);
-
-constexpr ualign TrieBranch_align = _Alignof(TrieBranch);
+static_assert(Trie_align >= _Alignof(TrieBranch));
 
 usize TrieBranch_ZZallocsize(uint size) {
 	return __builtin_offsetof(TrieBranch, next) + (size * sizeof(Trie));
@@ -96,9 +95,7 @@ typedef struct {
 	u8 bytes[];
 } TrieSegment;
 
-static_assert(_Alignof(TrieSegment) > TrieFlag_mask);
-
-constexpr ualign TrieSegment_align = _Alignof(TrieSegment);
+static_assert(Trie_align >= _Alignof(TrieSegment));
 
 usize TrieSegment_ZZallocsize(TrieSize size) {
 	return __builtin_offsetof(TrieSegment, bytes) + size;
@@ -108,7 +105,7 @@ Trie Trie_ZZcreatestub(Alc alc, Ptr value) {
 	auto ptr = Alc_invoke(alc, &(AlcReq) {
 		.intent = AlcIntent_New,
 		.size = TrieSegment_ZZallocsize(0),
-		.align = TrieSegment_align
+		.align = Trie_align
 	}, nullptr, nullptr);
 
 	auto res = AlcPtr_get(ptr);
@@ -132,7 +129,7 @@ Trie Trie_ZZcreatesegment(
 	auto ptr = Alc_invoke(alc, &(AlcReq) {
 		.intent = AlcIntent_New,
 		.size = TrieSegment_ZZallocsize(segment_size),
-		.align = TrieSegment_align
+		.align = Trie_align
 	}, nullptr, nullptr);
 
 	auto res = AlcPtr_get(ptr);
@@ -150,6 +147,16 @@ Trie Trie_ZZcreatesegment(
 	return Trie_ZZupcast(data, FLAGS(TrieFlag));
 }
 
+Trie Trie_create(
+	Alc alc,
+	const u8 *segment, TrieSize segment_size,
+	Ptr value
+) {
+	if (segment_size == 0)
+		return Trie_ZZcreatestub(alc, value);
+
+	return Trie_ZZcreatesegment(alc, segment, segment_size, value);
+}
 
 Trie Trie_ZZset(
 	Trie this,
@@ -226,17 +233,6 @@ OutStreamRes Trie_ZZprint(Trie this, OutStream os, TrieSize depth) {
 		return TrieBranch_ZZprint(this, os, depth);
 	else
 		return TrieSegment_ZZprint(this, os, depth);
-}
-
-Trie Trie_create(
-	Alc alc,
-	const u8 *segment, TrieSize segment_size,
-	Ptr value
-) {
-	if (segment_size == 0)
-		return Trie_ZZcreatestub(alc, value);
-
-	return Trie_ZZcreatesegment(alc, segment, segment_size, value);
 }
 
 Trie Trie_set(
