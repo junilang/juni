@@ -96,7 +96,7 @@ constexpr usize TypeSc_mask = 0b11ull;
 
 	Ptr Type_this(Type this) { return this.this; }
 
-	Type ZZType_setsc(Type this, TypeSc sc) {
+	Type Type_ZZsetsc(Type this, TypeSc sc) {
 		return (Type) {
 			.this = this.this,
 			.iface.value = (Ptr)(((usize)this.iface.value & (~TypeSc__MASK)) | (usize)sc)
@@ -182,13 +182,13 @@ Type Type_copy(Type this, Alc alc, TypeCopyFlag flags) {
 	return Type_iface(this)->copy(Type_this(this), IPASS(Allocator, alc), flags);
 }
 
-void Type_destroy(Type this, Allocator alc) {
+void Type_destroy(Type this, Alc alc) {
 	switch (Type_sc(this)) {
-		case TypeSc_CONST:
-		case TypeSc_ENUM:
+		case TypeSc_Const:
+		case TypeSc_Enum:
 			return;
-		case TypeSc_MOVE:
-		case TypeSc_COPY:
+		case TypeSc_Move:
+		case TypeSc_Copy:
 			Type_iface(this)->destroy(Type_this(this), IPASS(Allocator, alc));
 			return;
 	}
@@ -202,20 +202,19 @@ Printable Type_repr(Type this) {
 
 uhash Type_hash(Type this, uhash base) {
 	const TypeId id = Type_id(this);
-	if (Type_sc(this) == TypeSc_ENUM)
-		return HASH(id, HASH(Type_this(this), base));
-
-	return HASH(id, Type_iface(this)->hash(Type_this(this), base));
+	if (Type_sc(this) == TypeSc_Enum)
+		return HASH(id, HASH(base, Type_this(this)));
+	return HASH(Type_iface(this)->hash(Type_this(this), base), id);
 }
 
 bool Type_equal(Type this, Type other) {
 	if (Type_id(this) != Type_id(other)) return false;
 
 	if (
-		(Type_sc(this) == TypeSc_ENUM)
+		(Type_sc(this) == TypeSc_Enum)
 
 		#if BUILD_SAFE
-			&& (Type_sc(other) == TypeSc_ENUM)
+			&& (Type_sc(other) == TypeSc_Enum)
 		#endif
 	)
 		return Type_this(this) == Type_this(other);
