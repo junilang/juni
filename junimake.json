@@ -34,6 +34,12 @@
 		"-Wno-unused-parameter"
 	],
 
+	"profile_nt": {
+		"flags": [
+			"--target=x86_64-w64-mingw32"
+		]
+	},
+
 	"profile_lsp": {
 		"flags": [ "-xc-header", "-ferror-limit=0" ],
 		"macros": {

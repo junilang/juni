@@ -2,4 +2,5 @@
 	#define JUNI_UTIL_INCLUDE true
 
 	#include "Trie.h"
+
 #endif

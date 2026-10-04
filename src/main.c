@@ -1,6 +1,11 @@
-#include <silver.h>
+#include <silver_os.h>
+#include <silver_core.h>
+#include <silver_data.h>
+#include <silver_fs.h>
+#include <silver_async.h>
 
 #include "util/_include.h"
+#include "parser/_include.h"
 
 #if BUILD_TESTING
 	#include <silver_test.h>
