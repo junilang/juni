@@ -2,10 +2,9 @@
 #include <silver_core.h>
 #include <silver_data.h>
 #include <silver_fs.h>
-#include <silver_async.h>
 
 #include "util/_include.h"
-#include "parser/_include.h"
+//#include "parser/_include.h"
 
 #if BUILD_TESTING
 	#include <silver_test.h>
@@ -13,6 +12,7 @@
 	#define TEST_SUITE_BEGIN void juni_testsuite(SilverTestState *state) {
 	#define TEST_RUN(test, name) SilverTest_run(state, String_from(name), &test##_entry);
 	#define TEST_SUITE_END }
+	#define TEST(name) int name##entry(SilverTestContext *ctx)
 
 	#ifdef BUILD_TESTING_INCLUDE
 		#include BUILD_TESTING_INCLUDE

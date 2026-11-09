@@ -4,6 +4,10 @@
 	#define Trie_CONSERVATIVE true
 #endif
 
+#ifndef Trie_SAFE
+	#define Trie_SAFE BUILD_SAFE
+#endif
+
 typedef union {
 	Ptr value;
 	usize raw_value;
@@ -59,20 +63,20 @@ Trie Trie_const(Trie this) {
 	return (Trie){ .raw_value = this.raw_value | FLAG(TrieFlag_Const) };
 }
 
-Trie Trie_ZZupcast(Ptr data, TrieFlag flags) {
+Trie Trie_upcast(Ptr data, TrieFlag flags) {
 	return (Trie){ .raw_value = (usize)data | flags };
 }
 
-TrieFlag Trie_ZZflags(Trie this) {
+TrieFlag Trie_flags(Trie this) {
 	return (TrieFlag)(this.raw_value & TrieFlag_mask);
 }
 
-Trie Trie_ZZorflags(Trie this, TrieFlag flags) {
+Trie Trie_orflags(Trie this, TrieFlag flags) {
 	return (Trie){ .raw_value = this.raw_value | flags };
 }
 
-bool Trie_ZZequal(Trie this, Trie other) {
-	return ((this.raw_value ^ other.raw_value) & FLAG_NOT(TrieFlag_Const)) == 0;
+bool Trie_equal(Trie this, Trie other) {
+	return ((this.raw_value ^ other.raw_value) & FLAG_CLEAR(TrieFlag_Const)) == 0;
 }
 
 typedef struct {
@@ -83,7 +87,7 @@ typedef struct {
 
 static_assert(Trie_align >= _Alignof(TrieBranch));
 
-usize TrieBranch_ZZallocsize(uint size) {
+usize TrieBranch_allocsize(uint size) {
 	return __builtin_offsetof(TrieBranch, next) + (size * sizeof(Trie));
 }
 
@@ -97,14 +101,14 @@ typedef struct {
 
 static_assert(Trie_align >= _Alignof(TrieSegment));
 
-usize TrieSegment_ZZallocsize(TrieSize size) {
+usize TrieSegment_allocsize(TrieSize size) {
 	return __builtin_offsetof(TrieSegment, bytes) + size;
 }
 
-Trie Trie_ZZcreatestub(Alc alc, Ptr value) {
+Trie Trie_createstub(Alc alc, Ptr value) {
 	auto ptr = Alc_invoke(alc, &(AlcReq) {
 		.intent = AlcIntent_New,
-		.size = TrieSegment_ZZallocsize(0),
+		.size = TrieSegment_allocsize(0),
 		.align = Trie_align
 	}, nullptr, nullptr);
 
@@ -116,19 +120,21 @@ Trie Trie_ZZcreatestub(Alc alc, Ptr value) {
 	data->value = value;
 	data->size = 0;
 
-	return Trie_ZZupcast(data, FLAG(TrieFlag_Occupied));
+	return Trie_upcast(data, FLAG(TrieFlag_Occupied));
 }
 
-Trie Trie_ZZcreatesegment(
+Trie TrieSegment_create(
 	Alc alc,
 	const u8 *segment, TrieSize segment_size,
 	Ptr value
 ) {
-	if (segment_size == 0) UNREACHABLE;
+	#if Trie_SAFE
+		ASSERT(segment_size != 0);
+	#endif
 
 	auto ptr = Alc_invoke(alc, &(AlcReq) {
 		.intent = AlcIntent_New,
-		.size = TrieSegment_ZZallocsize(segment_size),
+		.size = TrieSegment_allocsize(segment_size),
 		.align = Trie_align
 	}, nullptr, nullptr);
 
@@ -137,14 +143,14 @@ Trie Trie_ZZcreatesegment(
 
 	auto data = (TrieSegment*)ptr;
 
-	auto next = Trie_ZZcreatestub(alc, value);
+	auto next = Trie_createstub(alc, value);
 	if (Trie_iserr(next)) return next;
 
 	data->next = next;
 	data->value = nullptr;
 	data->size = segment_size;
 	memcpy(data->bytes, segment, segment_size);
-	return Trie_ZZupcast(data, FLAGS(TrieFlag));
+	return Trie_upcast(data, 0);
 }
 
 Trie Trie_create(
@@ -153,12 +159,12 @@ Trie Trie_create(
 	Ptr value
 ) {
 	if (segment_size == 0)
-		return Trie_ZZcreatestub(alc, value);
+		return Trie_createstub(alc, value);
 
-	return Trie_ZZcreatesegment(alc, segment, segment_size, value);
+	return TrieSegment_create(alc, segment, segment_size, value);
 }
 
-Trie Trie_ZZset(
+Trie Trie_set_(
 	Trie this,
 	Alc alc,
 	const u8 *segment,
@@ -166,19 +172,19 @@ Trie Trie_ZZset(
 	Ptr value
 );
 
-Trie Trie_ZZunset(
+Trie Trie_unset_(
 	Trie this,
 	Alc alc,
 	const u8 *segment,
 	TrieSize segment_size
 );
 
-AlcRes Trie_ZZdestroy(
+AlcRes Trie_destroy_(
 	Trie this,
 	Alc alc
 );
 
-OutStreamRes Trie_ZZprint(
+OutStreamRes Trie_print_(
 	Trie this,
 	OutStream os,
 	TrieSize depth
@@ -187,52 +193,64 @@ OutStreamRes Trie_ZZprint(
 #include "TrieBranch.h"
 #include "TrieSegment.h"
 
-Trie Trie_ZZset(
+Trie Trie_set_(
 	Trie this,
 	Alc alc,
 	const u8 *segment,
 	TrieSize segment_size,
 	Ptr value
 ) {
-	if (Trie_isnull(this)) UNREACHABLE;
+	#if Trie_SAFE
+		ASSERT(!Trie_isnull(this));
+	#endif
 
 	if (Trie_isbranch(this)) {
-		return TrieBranch_ZZset(this, alc, segment, segment_size, value);
+		return TrieBranch_set(this, alc, segment, segment_size, value);
 	} else {
-		return TrieSegment_ZZset(this, alc, segment, segment_size, value);
+		return TrieSegment_set(this, alc, segment, segment_size, value);
 	}
 }
 
-Trie Trie_ZZunset(
+Trie Trie_unset_(
 	Trie this,
 	Alc alc,
 	const u8 *segment,
 	TrieSize segment_size
 ) {
-	if (Trie_isnull(this)) UNREACHABLE;
+	#if Trie_SAFE
+		ASSERT(!Trie_isnull(this));
+	#endif
+
 
 	if (Trie_isbranch(this))
-		return TrieBranch_ZZunset(this, alc, segment, segment_size);
+		return TrieBranch_unset(this, alc, segment, segment_size);
 	else
-		return TrieSegment_ZZunset(this, alc, segment, segment_size);
+		return TrieSegment_unset(this, alc, segment, segment_size);
 }
 
-AlcRes Trie_ZZdestroy(Trie this, Alc alc) {
-	if (Trie_isnull(this) || Trie_isconst(this)) UNREACHABLE;
+AlcRes Trie_destroy_(Trie this, Alc alc) {
+	#if Trie_SAFE
+		ASSERT(
+			!Trie_isnull(this) && !Trie_isconst(this)
+		);
+	#endif
 
 	if (Trie_isbranch(this))
-		return TrieBranch_ZZdestroy(this, alc);
+		return TrieBranch_destroy(this, alc);
 	else
-		return TrieSegment_ZZdestroy(this, alc);
+		return TrieSegment_destroy(this, alc);
 }
 
-OutStreamRes Trie_ZZprint(Trie this, OutStream os, TrieSize depth) {
-	if (Trie_isnull(this)) UNREACHABLE;
+OutStreamRes Trie_print_(Trie this, OutStream os, TrieSize depth) {
+	#if Trie_SAFE
+		ASSERT(!Trie_isnull(this));
+	#endif
+
 
 	if (Trie_isbranch(this))
-		return TrieBranch_ZZprint(this, os, depth);
+		return TrieBranch_print(this, os, depth);
 	else
-		return TrieSegment_ZZprint(this, os, depth);
+		return TrieSegment_print(this, os, depth);
 }
 
 Trie Trie_set(
@@ -245,7 +263,7 @@ Trie Trie_set(
 	if (Trie_isnull(this))
 		return Trie_create(alc, segment, segment_size, value);
 
-	return Trie_ZZset(this, alc, segment, segment_size, value);
+	return Trie_set_(this, alc, segment, segment_size, value);
 }
 
 
@@ -258,7 +276,7 @@ Trie Trie_unset(
 	if (Trie_isnull(this))
 		return this;
 
-	return Trie_ZZunset(this, alc, segment, segment_size);
+	return Trie_unset_(this, alc, segment, segment_size);
 }
 
 AlcRes Trie_destroy(
@@ -268,7 +286,7 @@ AlcRes Trie_destroy(
 	if (Trie_isnull(this) || Trie_isconst(this))
 		return AlcRes_Ok;
 
-	return Trie_ZZdestroy(this, alc);
+	return Trie_destroy_(this, alc);
 }
 
 OutStreamRes Trie_print(
@@ -278,7 +296,7 @@ OutStreamRes Trie_print(
 	if (Trie_isnull(this))
 		return OutStream_write(os, STR("Trie_null\n"));
 
-	auto res = Trie_ZZprint(this, os, 1);
+	auto res = Trie_print_(this, os, 1);
 	if (res) return res;
 	return OutStream_write(os, STR("\n"));
 }
