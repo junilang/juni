@@ -6,66 +6,18 @@
 	#define Type_SAFE BUILD_SAFE
 #endif
 
+#include "TypePtr.h"
+#include "TypeHash.h"
+
 typedef STRUCTDECL(Type);
-
-typedef enum : u8 {
-	TypeSc_Enum,
-	TypeSc_Const,
-	TypeSc_Copy,
-	TypeSc_Clone,
-	TypeSc_Move,
-} TypeSc;
-
-constexpr auto TypeSc_width = 3;
-constexpr usize TypeSc_mask = FIELD_MASK_LOWER(usize, TypeSc_width);
-
-#if Type_PTRTAG
-	constexpr usize TypePtr_maxenum = ptrtag_addr_mask >> TypeSc_width;
-#else
-	constexpr usize TypePtr_maxenum = usize_max >> TypeSc_width;
-#endif
-
-typedef UNIQUEPTR(TypePtr);
-
-TypeSc TypePtr_sc(TypePtr this) {
-	return (TypeSc)((usize)this & TypeSc_mask);
-}
-
-Ptr TypePtr_ptr(TypePtr this) {
-	return (Ptr)((usize)this & (~TypeSc_mask));
-}
-
-usize TypePtr_enum(TypePtr this) {
-	return (usize)this >> TypeSc_width;
-}
-
-TypePtr TypePtr_fromptr(Ptr this, TypeSc sc) {
-	#if Type_SAFE
-		ASSERT(!((usize)this & TypeSc_mask));
-	#endif
-
-	return (TypePtr)((usize)this | sc);
-}
-
-TypePtr TypePtr_fromenum(usize this) {
-	#if Type_SAFE
-		ASSERT(this <= TypePtr_maxenum);
-	#endif
-
-	return (TypePtr)(this << TypeSc_width);
-}
-
-typedef u64 TypeHash;
-
 typedef struct {
-	#if Printable_PTRTAG
-		Printable (*repr)(TypePtr this);
-	#else
-		void (*repr)(TypePtr this, Printable *out_printable);
-	#endif
+	void (*asFmt)(TypePtr this, Fmt *out_fmt);
 	AlcRes (*copy)(TypePtr this, IARG(Alc, alc), Type *out_copy);
 	AlcRes (*destroy)(TypePtr this, IARG(Alc, alc));
 	TypeHash (*hash)(TypePtr this, TypeHash base);
+	bool (*equal)(TypePtr this, TypePtr other);
+	bool (*lmatch)(TypePtr this, IARG(Type, other));
+	bool (*rmatch)(TypePtr this, IARG(Type, other));
 } IType;
 
 #if Type_PTRTAG
@@ -76,16 +28,23 @@ typedef struct {
 		};
 	};
 
+	#ifndef IType_SLOTS
+		#define IType_SLOTS 16
+	#endif
+
+	constexpr auto IType_slots = IType_SLOTS;
+
 	enum {
 		IType_NullType_ID,
 		IType_SetType_ID,
 		IType_UnionType_ID,
+		IType_PrimitiveType_ID,
 		IType_reserved
 	};
 
 	typedef utag TypeId;
 
-	IFACEDB(IType, TypeId, 32, IType_reserved);
+	IFACEDB(IType, TypeId, IType_slots, IType_reserved);
 
 	TypePtr Type_this(Type this) {
 		return ptrstrip(this.value);
@@ -113,7 +72,6 @@ typedef struct {
 	}
 
 #else
-	// TODO implement
 	struct Type {
 		TypePtr this;
 		const IType *iface;
@@ -143,7 +101,6 @@ typedef struct {
 		};
 	}
 
-
 #endif
 
 Type Type_const(Type this) {
@@ -158,9 +115,8 @@ Type Type_const(Type this) {
 			return Type_setsc_(this, TypeSc_Const);
 
 		default:
+			UNREACHABLE(Type_SAFE);
 	}
-
-	UNREACHABLE(Type_SAFE);
 }
 
 bool Type_isconst(Type this) {
@@ -175,9 +131,8 @@ bool Type_isconst(Type this) {
 			return false;
 
 		default:
+			UNREACHABLE(Type_SAFE);
 	}
-
-	UNREACHABLE(Type_SAFE);
 }
 
 Type Type_move(Type this) {
@@ -192,9 +147,8 @@ Type Type_move(Type this) {
 			return Type_setsc_(this, TypeSc_Move);
 
 		default:
+			UNREACHABLE(Type_SAFE);
 	}
-
-	UNREACHABLE(Type_SAFE);
 }
 
 bool Type_ismove(Type this) {
@@ -209,9 +163,8 @@ bool Type_ismove(Type this) {
 			return true;
 
 		default:
+			UNREACHABLE(Type_SAFE);
 	}
-
-	UNREACHABLE(Type_SAFE);
 }
 
 Type Type_clone(Type this) {
@@ -224,6 +177,9 @@ Type Type_clone(Type this) {
 		case TypeSc_Copy:
 		case TypeSc_Move:
 			return Type_setsc_(this, TypeSc_Clone);
+
+		default:
+			UNREACHABLE(Type_SAFE);
 	}
 }
 
@@ -239,9 +195,8 @@ bool Type_isclone(Type this) {
 			return true;
 
 		default:
+			UNREACHABLE(Type_SAFE);
 	}
-
-	UNREACHABLE(Type_SAFE);
 }
 
 
@@ -258,9 +213,8 @@ AlcRes Type_copy(Type this, Alc alc, Type *out_copy) {
 			return Type_iface(this)->copy(Type_this(this), IPASS(Alc, alc), out_copy);
 
 		default:
+			UNREACHABLE(Type_SAFE);
 	}
-
-	UNREACHABLE(Type_SAFE);
 }
 
 AlcRes Type_destroy(Type this, Alc alc) {
@@ -274,21 +228,53 @@ AlcRes Type_destroy(Type this, Alc alc) {
 			return Type_iface(this)->destroy(Type_this(this), IPASS(Alc, alc));
 
 		default:
+			UNREACHABLE(Type_SAFE);
 	}
-
-	UNREACHABLE(Type_SAFE);
 }
 
-Printable Type_repr(Type this) {
-	#if Printable_PTRTAG
-		return Type_iface(this)->repr(Type_this(this));
-	#else
-		Printable result;
-		Type_iface(this)->repr(Type_this(this), &result);
-		return result;
-	#endif
+Fmt Type_asFmt(Type this) {
+	Fmt result;
+	Type_iface(this)->asFmt(Type_this(this), &result);
+	return result;
 }
 
 TypeHash Type_hash(Type this, TypeHash base) {
-	return Type_iface(this)->hash(Type_this(this), base);
+	auto const thisp = Type_this(this);
+
+	switch (Type_sc(this)) {
+		case TypeSc_Enum:
+			auto const id = Type_id(this);
+			auto const val = TypePtr_ptr(thisp);
+			return Type_HASH(Type_HASH(TypeHash_base, id), (usize)val);
+
+		case TypeSc_Const:
+		case TypeSc_Copy:
+		case TypeSc_Clone:
+		case TypeSc_Move:
+			return Type_iface(this)->hash(Type_this(this), base);
+
+		default:
+			UNREACHABLE(Type_SAFE);
+	}
+}
+
+bool Type_equal(Type this, Type other) {
+	if (Type_id(this) != Type_id(other))
+		return false;
+
+	auto const thisp = Type_this(this);
+	auto const otherp = Type_this(other);
+
+	if (TypePtr_ptr(thisp) == TypePtr_ptr(otherp))
+		return true;
+
+	return Type_iface(this)->equal(thisp, otherp);
+}
+
+bool Type_lmatch(Type this, Type other) {
+	return Type_iface(this)->lmatch(Type_this(this), IPASS(Type, other));
+}
+
+bool Type_rmatch(Type this, Type other) {
+	return Type_iface(this)->rmatch(Type_this(this), IPASS(Type, other));
 }
